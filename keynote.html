@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Robot: From Fun to Future-Ready</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Vibrant Tech -->
+    <!-- Application Structure Plan: A single-page, thematic scrolling experience. The structure guides the user from the "Why" (the challenge in STEAM education) to the "What" (the Ninja Robot solution) and the "How" (platform features and community). This narrative flow is more engaging than a linear slide deck. Key interactions include hoverable stat cards, clickable tabs for exploring features, and an interactive chart for comparing coding methods. This design prioritizes user-driven exploration and makes complex information digestible. -->
+    <!-- Visualization & Content Choices: 1. STEAM Challenge Stats: Info -> Goal: Inform -> Viz: Doughnut Charts -> Interaction: Hover tooltips -> Justification: Visually engaging way to present key percentages (73%, 80%) without clutter. Library: Chart.js/Canvas. 2. How it Works: Info -> Goal: Organize -> Method: Tabbed Interface -> Interaction: Click to switch content -> Justification: Organizes detailed features (Anatomy, Platform, Community) into a compact, user-controlled component. Method: HTML/JS. 3. Paths to Mastery: Info -> Goal: Compare -> Viz: Interactive Bar Chart -> Interaction: Click a bar to display details -> Justification: Allows users to actively compare the different coding methods and learn more about the one that interests them. Library: Chart.js/Canvas. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8fafc;
+            overflow: hidden;
+            height: 100%;
+            width: 100%;
+        }
+        .bg-gradient-primary {
+            background-image: linear-gradient(to right, #FF9100, #FF4081);
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 250px;
+        }
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .cover-slide-bg {
+            background-image: url('images/0924PresentationCover.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        header {
+            transition: transform 0.3s ease-in-out;
+        }
+        .slideshow-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .slideshow-image {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: opacity 1s ease-in-out;
+            opacity: 0;
+        }
+        .slideshow-image.active {
+            opacity: 1;
+        }
+        .slideshow-dot {
+            cursor: pointer;
+            height: 12px;
+            width: 12px;
+            margin: 0 4px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            display: inline-block;
+            transition: background-color 0.6s ease;
+        }
+        .slideshow-dot.active {
+            background-color: rgba(255, 255, 255, 1);
+        }
+        #hardware-slideshow-dots .slideshow-dot, #software-slideshow-dots .slideshow-dot {
+            background-color: #fed7aa; /* orange-200 */
+        }
+        #hardware-slideshow-dots .slideshow-dot.active, #software-slideshow-dots .slideshow-dot.active {
+            background-color: #f97316; /* orange-500 */
+        }
+        #platform-slideshow-dots-simulator .slideshow-dot, #platform-slideshow-dots-community .slideshow-dot {
+            background-color: #fed7aa;
+        }
+        #platform-slideshow-dots-simulator .slideshow-dot.active, #platform-slideshow-dots-community .slideshow-dot.active {
+            background-color: #f97316;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white/80 backdrop-blur-md fixed top-0 z-40 shadow-md w-full" style="transform: translateY(-100%);">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold bg-gradient-primary text-transparent bg-clip-text">NINJA ROBOT</div>
+            <div id="nav-links" class="hidden md:flex space-x-8">
+                <a data-slide="0" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">Home</a>
+                <a data-slide="2" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">Agendas</a>
+                <a data-slide="3" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">What is Ninja?</a>
+                <a data-slide="4" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">Ninja Spec</a>
+                <a data-slide="5" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">Why Ninja?</a>
+                <a data-slide="6" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">Ninja Platform</a>
+                <a data-slide="8" class="text-gray-600 hover:text-pink-500 transition cursor-pointer">Join Us</a>
+            </div>
+        </nav>
+    </header>
+
+    <main id="slide-container" class="w-full h-full transition-transform duration-500 ease-in-out flex">
+        
+        <section class="slide cover-slide-bg">
+        </section>
+
+        <section class="slide bg-black p-0 justify-start">
+            <video id="demo-video" class="h-full w-auto max-h-screen cursor-pointer" src="images/demovideo.mp4" playsinline>
+            </video>
+        </section>
+
+        <section class="slide bg-gradient-primary text-white">
+            <div class="container mx-auto px-6 text-center">
+                <div class="max-w-3xl mx-auto">
+                    <h1 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">From Fun to Future Ready</h1>
+                    <p class="text-xl md:text-2xl opacity-90 mb-12">遊びから、未来を創る力へ</p>
+                    <div class="max-w-2xl mx-auto bg-white/10 p-8 rounded-2xl text-left shadow-lg">
+                        <h2 class="text-3xl font-bold mb-6 text-center">Today's Topics</h2>
+                        <ul class="space-y-4 text-xl">
+                            <li class="flex items-center"><span class="text-3xl mr-4">🤖</span> What’s Ninja Robot?</li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">🤔</span> Why Robot?</li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">🌍</span> Global Open Source Robot Communities</li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">🚀</span> Ninja Robot Live Demo</li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">💥</span> Robot Sumo</li>
+                            <li class="flex items-center"><span class="text-3xl mr-4">👋</span> Join us at Fablab Kannai</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <img src="images/Hello.png" alt="Ninja Robot waving hello" class="absolute bottom-[3%] right-[10%] w-auto h-auto max-w-[30vw] md:max-w-[30vw] z-10 pointer-events-none">
+        </section>
+
+        <section id="what-is-ninja" class="slide">
+            <div class="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+                <div class="text-center md:text-left">
+                    <h2 class="text-4xl font-bold mb-2">What is Ninja Robot?</h2>
+                    <h3 class="text-2xl font-semibold opacity-90  mb-6">ニンジャで何ですか</h3>
+                     <div class="space-y-6 text-lg">
+                        <div class="flex items-start">
+                            <span class="text-3xl mr-4 text-orange-500">🎨</span>
+                            <div>
+                                <h4 class="font-bold">Learn STEAM Through Play （遊びながらSTEAMを学ぶ）</h4>
+                                <p class="text-gray-600">Turn coding and engineering into fun, hands-on adventures. Build and program a real robot to grasp complex ideas naturally.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-3xl mr-4 text-pink-500">🛠️</span>
+                            <div>
+                                <h4 class="font-bold">More Than a Toy—A Creation Tool （おもちゃ以上、創造のツール）</h4>
+                                <p class="text-gray-600">Not just instructions. Ninja Robot is a platform to design, build, and code your own unique projects.</p>
+                            </div>
+                        </div>
+                         <div class="flex items-start">
+                            <span class="text-3xl mr-4 text-blue-500">🧠</span>
+                            <div>
+                                <h4 class="font-bold">A Friend with an AI Brain （AI頭脳を持つ友達）</h4>
+                                <p class="text-gray-600">Powered by Google Gemini AI. Talk to it, give commands, and learn together through natural interaction.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-3xl mr-4 text-green-500">🌍</span>
+                            <div>
+                                <h4 class="font-bold">Open Source, Globally Connected （オープンソースで世界とつながる）</h4>
+                                <p class="text-gray-600">Rooted in open-source spirit. Connected with Otto DIY—the world’s largest robot learning community.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center">
+                    <img src="images/NinjaGif4_3.gif" alt="Animated Ninja Robot" class="rounded-3xl shadow-2xl max-w-sm w-full">
+                </div>
+            </div>
+        </section>
+
+        <section id="ninja-spec" class="slide bg-slate-50">
+            <div class="container mx-auto px-6 w-full">
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-2">Expandable Ninja Robot Module and Design</h2>
+                    <h3 class="text-2xl font-semibold text-gray-500">拡張可能なモジュールとAI統合機能</h3>
+                </div>
+                <div id="spec-tabs-container" class="max-w-5xl mx-auto">
+                    <div class="flex border-b border-gray-200 mb-8 justify-center">
+                        <button data-tab="hardware" class="spec-tab-button flex-1 py-4 px-6 text-lg font-semibold text-pink-500 border-b-2 border-pink-500">Hardware</button>
+                        <button data-tab="software" class="spec-tab-button flex-1 py-4 px-6 text-lg font-semibold text-gray-500">Software</button>
+                    </div>
+
+                    <div id="spec-content-area" class="mt-8 min-h-[420px] flex justify-center items-center">
+                        <div id="spec-choice-blocks" class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div class="spec-choice-block bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col justify-center items-center h-72 w-72">
+                                <p class="text-8xl mb-4">🔩</p>
+                                <h4 class="text-2xl font-bold">Hardware</h4>
+                                <p class="text-gray-600 mt-2">The Body and Brain<br>体と脳</p>
+                            </div>
+                            <div class="spec-choice-block bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col justify-center items-center h-72 w-72">
+                                <p class="text-8xl mb-4">💻</p>
+                                <h4 class="text-2xl font-bold">Software</h4>
+                                <p class="text-gray-600 mt-2">The Soul and Skills<br>コントロールと機能</p>
+                            </div>
+                        </div>
+
+                        <div id="hardware-content" class="spec-tab-pane hidden w-full">
+                            <div class="grid md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-2xl shadow-inner">
+                                <div>
+                                    <ul class="list-disc list-inside text-gray-600 space-y-4 text-lg">
+                                        <li><b>Raspberry Pi Family:</b> The powerful, compact brain of the robot, compatible with various models like the Pi Zero 2W for ultimate flexibility.</li>
+                                        <li><b>Customized Dev Board:</b> Simplifies connections for sensors, motors, and power, making assembly and expansion a breeze.</li>
+                                        <li><b>Customizable Modules:</b> Easily add new sensors for sight, sound, and touch, or attach new parts to create a truly unique robot.</li>
+                                    </ul>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="p-4 bg-gradient-primary rounded-2xl shadow-lg flex justify-center items-center h-[300px] w-full">
+                                        <div id="hardware-slideshow-container" class="slideshow-container">
+                                            <img src="images/NinjaHardware01.jpg" class="slideshow-image active" alt="Ninja Robot Hardware 1">
+                                            <img src="images/NinjaHardware02.jpg" class="slideshow-image" alt="Ninja Robot Hardware 2">
+                                        </div>
+                                    </div>
+                                    <div id="hardware-slideshow-dots" class="text-center p-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="software-content" class="spec-tab-pane hidden w-full">
+                           <div class="grid md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-2xl shadow-inner">
+                                <div>
+                                    <ul class="list-disc list-inside text-gray-600 space-y-4 text-lg">
+                                        <li><b>Gemini Robot Agent:</b> The AI soul that allows you to control the robot with natural language, ask questions, and give it a personality.</li>
+                                        <li><b>Python Robot Drive:</b> The core open-source software that controls the robot's movements and functions, perfect for learning and modification.</li>
+                                        <li><b>GitHub Repository:</b> Access all our code and designs. Learn from the community, contribute your own ideas, and help build the future of Ninja Robot together.</li>
+                                    </ul>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="p-4 bg-gradient-primary rounded-2xl shadow-lg flex justify-center items-center h-[300px] w-full">
+                                        <div id="software-slideshow-container" class="slideshow-container">
+                                            <img src="images/Ninjasoftware01.jpg" class="slideshow-image active" alt="Ninja Robot Software Example 1">
+                                            <img src="images/Ninjasoftware02.jpg" class="slideshow-image" alt="Ninja Robot Software Example 2">
+                                        </div>
+                                    </div>
+                                    <div id="software-slideshow-dots" class="text-center p-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="challenge" class="slide">
+            <div class="container mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <h2 class="text-4xl font-bold mb-2">Why Ninja Robot? </h2>
+                    <h3 class="text-2xl font-semibold opacity-90  mb-6">なぜニンジャ　ロボット？</h3>
+                    <div class="space-y-8">
+                        <div>
+                            <h3 class="text-2xl font-bold">1. Supporting Existing Education System</h3>
+                            <h4 class="text-xl font-semibold text-gray-600 mb-2">（既存の教育システムを支援）</h4>
+                            <p class="text-gray-700 text-lg">Ninja Robot lowers barriers for teachers, making STEAM easier to introduce in any classroom.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">2. From Test-Prep to Creativity</h3>
+                            <h4 class="text-xl font-semibold text-gray-600 mb-2">（テスト勉強から創造へ）</h4>
+                            <p class="text-gray-700 text-lg">Shifts focus from rote memorization to hands-on projects that inspire imagination.</p>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold">3. Bringing STEAM to Life</h3>
+                            <h4 class="text-xl font-semibold text-gray-600 mb-2">（STEAMを体感に）</h4>
+                            <p class="text-gray-700 text-lg">Turns abstract ideas like coding into playful, tangible experiences students can grasp.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="w-full">
+                    <h4 class="text-2xl font-bold text-center mb-6">The Challenge</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="bg-white p-6 rounded-2xl shadow-lg text-center h-full">
+                                <h5 class="text-xl font-bold text-orange-500 mb-2">Anxious Teachers</h5>
+                                <div class="relative w-full max-w-[200px] h-[200px] mx-auto">
+                                    <canvas id="teacherChart"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl font-extrabold text-orange-500">73%</div>
+                                </div>
+                                <p class="text-gray-600 mt-4 text-sm">A significant majority report feeling anxious about teaching programming concepts.</p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2 text-center">Source: LINEみらい財団「プログラミング教育必修化に関する調査報告書(2020)」</p>
+                        </div>
+                        <div>
+                            <div class="bg-white p-6 rounded-2xl shadow-lg text-center h-full">
+                                <h5 class="text-xl font-bold text-pink-500 mb-2">Insufficient Education</h5>
+                                <div class="relative w-full max-w-[200px] h-[200px] mx-auto">
+                                    <canvas id="parentChart"></canvas>
+                                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-4xl font-extrabold text-pink-500">80%</div>
+                                </div>
+                                <p class="text-gray-600 mt-4 text-sm">Most parents believe the current programming education in schools is not enough.</p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-2 text-center">Source: ヒューマンアカデミー株式会社「STEAM教育に関する意識調査」(2024)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="solution" class="slide">
+            <div class="container mx-auto px-6 w-full">
+                 <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold mb-4">Our Vision: Ninja Robot Platform</h2>
+                    <p class="max-w-3xl mx-auto text-gray-600 text-lg italic">"Tell me and I forget. Teach me and I remember. Involve me and I learn."</p>
+                    <p class="max-w-3xl mx-auto text-gray-500 mt-2">- Benjamin Franklin</p>
+                </div>
+                <div id="platform-tabs-container" class="max-w-5xl mx-auto">
+                    <div class="flex border-b border-gray-200 mb-8 justify-center">
+                        <button data-tab="simulator" class="platform-tab-button flex-1 py-4 px-6 text-lg font-semibold text-pink-500 border-b-2 border-pink-500">Online Robot Simulator</button>
+                        <button data-tab="community" class="platform-tab-button flex-1 py-4 px-6 text-lg font-semibold text-gray-500">Global Robot Community</button>
+                    </div>
+
+                    <div id="platform-content-area" class="mt-8 min-h-[420px] flex justify-center items-center">
+                        <div id="platform-choice-blocks" class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div class="platform-choice-block bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col justify-center items-center h-72 w-72">
+                                <p class="text-8xl mb-4">🎮</p>
+                                <h4 class="text-2xl font-bold">Online Robot Simulator</h4>
+                                <p class="text-gray-600 mt-2">Start coding, no robot needed!<br>ロボットなしで始めよう</p>
+                            </div>
+                            <div class="platform-choice-block bg-white p-6 rounded-2xl shadow-lg text-center flex flex-col justify-center items-center h-72 w-72">
+                                <p class="text-8xl mb-4">🌍</p>
+                                <h4 class="text-2xl font-bold">Global Robot Communities</h4>
+                                <p class="text-gray-600 mt-2">Learn and share with makers worldwide.<br>世界中の仲間と学び合う</p>
+                            </div>
+                        </div>
+
+                        <div id="simulator-content" class="platform-tab-pane hidden w-full">
+                            <div class="grid md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-2xl shadow-inner">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-4">You don't need a robot to start!</h3>
+                                    <ul class="list-disc list-inside text-gray-600 space-y-4 text-lg">
+                                        <li><b>Multiple ways to code:</b> Use visual blocks for beginners or switch to Python for more advanced projects.</li>
+                                        <li><b>Vibe Robot Coding:</b> Just talk naturally to your virtual robot in English, 日本語, or 中文 to see it respond in the simulator.</li>
+                                        <li><b>Zero Installation:</b> Access the full experience from any web browser on any device.</li>
+                                    </ul>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="p-4 bg-gradient-primary rounded-2xl shadow-lg flex justify-center items-center h-[300px] w-full">
+                                        <div id="platform-slideshow-container-simulator" class="slideshow-container">
+                                            <img src="images/Platform01.jpg" class="slideshow-image active" alt="Ninja Robot Platform Simulator 1">
+                                            <img src="images/Platform02.jpg" class="slideshow-image" alt="Ninja Robot Platform Simulator 2">
+                                            <img src="images/Platform03.jpg" class="slideshow-image" alt="Ninja Robot Platform Simulator 3">
+                                            <img src="images/Platform04.jpg" class="slideshow-image" alt="Ninja Robot Platform Simulator 4">
+                                        </div>
+                                    </div>
+                                    <div id="platform-slideshow-dots-simulator" class="text-center p-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="community-content" class="platform-tab-pane hidden w-full">
+                           <div class="grid md:grid-cols-2 gap-12 items-center bg-white p-8 rounded-2xl shadow-inner">
+                                <div>
+                                    <h3 class="text-2xl font-bold mb-4">Ottodiy, Tokylabs, Global Fablabs</h3>
+                                    <ul class="list-disc list-inside text-gray-600 space-y-4 text-lg">
+                                        <li><b>Inspired by OttoDIY:</b> We embrace the open-source spirit of sharing designs and code freely to make robotics accessible for everyone.</li>
+                                        <li><b>Share Your Creations:</b> Our platform will feature a hub for you to upload your projects, show off your code, and see what others are building.</li>
+                                        <li><b>Learn Together:</b> Get inspired by projects from around the world and be part of a global family of makers and innovators.</li>
+                                    </ul>
+                                </div>
+                                <div class="flex flex-col">
+                                    <div class="p-4 bg-gradient-primary rounded-2xl shadow-lg flex justify-center items-center h-[300px] w-full">
+                                        <div id="platform-slideshow-container-community" class="slideshow-container">
+                                             <img src="images/0tto01.png" class="slideshow-image active" alt="Otto DIY Robot 1">
+                                             <img src="images/0tto02.png" class="slideshow-image" alt="Otto DIY Robot 2">
+                                             <img src="images/Otto03.png" class="slideshow-image" alt="Otto DIY Robot 3">
+                                             <img src="images/0tto04.png" class="slideshow-image" alt="Otto DIY Robot 4">
+                                        </div>
+                                    </div>
+                                    <div id="platform-slideshow-dots-community" class="text-center p-2"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="slide bg-slate-50">
+             <div class="container mx-auto px-6 w-full text-center">
+                <h2 class="text-4xl font-bold mb-4">Ninja Robot Education Platform</h2>
+                <p class="max-w-3xl mx-auto text-gray-600 text-lg italic mb-8">"Tell me and I forget. Teach me and I remember. Involve me and I learn." - Benjamin Franklin</p>
+                <div class="max-w-5xl mx-auto">
+                     <video class="w-full rounded-lg shadow-2xl" src="images/NinjaRobotPlatformDemo.mp4" controls playsinline></video>
+                </div>
+            </div>
+        </section>
+
+        <section id="mission" class="slide bg-gradient-primary text-white">
+            <div class="container mx-auto px-6 w-full">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-2">Join Team Ninja – Let’s Build the Future Together!</h2>
+                    <h3 class="text-2xl opacity-90">仲間になろう – 未来を一緒につくろう！</h3>
+                </div>
+
+                <p class="max-w-4xl mx-auto text-lg opacity-90 mb-10 text-center">The real magic happens when you start creating. Come join us at Fablab Kannai for our Robot Education Project! Learn, build, and create together while having fun.</p>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center max-w-5xl mx-auto">
+                    <div class="bg-white/20 p-8 rounded-3xl text-center">
+                        <h3 class="text-3xl font-bold mb-6">Team Ninja</h3>
+                        <div class="flex justify-center items-end space-x-4 md:space-x-6">
+                            <div class="text-center">
+                                <img src="images/member01.jpg" alt="Roger Chang" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-white shadow-lg">
+                                <p class="mt-2 font-semibold">Roger Chang</p>
+                            </div>
+                             <div class="text-center">
+                                <img src="images/member02.jpg" alt="谷林 陽一" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-white shadow-lg">
+                                <p class="mt-2 font-semibold">谷林 陽一</p>
+                            </div>
+                             <div class="text-center">
+                                <img src="images/member03.jpg" alt="髙尾 穣" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-white shadow-lg">
+                                <p class="mt-2 font-semibold">髙尾 穣</p>
+                            </div>
+                             <div class="text-center">
+                                <img src="images/member04.jpg" alt="山本 雅紀" class="w-24 h-24 rounded-full object-cover mx-auto border-4 border-white shadow-lg">
+                                <p class="mt-2 font-semibold">山本 雅紀</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl p-8 text-gray-800 shadow-2xl text-center">
+                        <h3 class="text-2xl font-bold mb-4">Scan to Sign Up!</h3>
+                        <div class="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded-lg">
+                            <img src="images/qrconnect.jpg" alt="Sign Up QR Code" class="w-full h-full object-contain rounded-lg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="robot-sumo" class="slide bg-gradient-primary text-white">
+            <div class="container mx-auto px-6 w-full text-center">
+                <div class="text-center mb-10">
+                    <h2 class="text-4xl md:text-5xl font-extrabold mb-2">Robot Sumo-ロボット相撲大会</h2>
+                    <p class="max-w-4xl mx-auto text-lg opacity-90 mt-4">It's your turn. Play with Ninja now</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 items-center max-w-4xl mx-auto">
+                    <div class="bg-orange-500/80 p-8 rounded-3xl text-center">
+                        <h3 class="text-2xl font-bold mb-4">Player 1</h3>
+                        <div class="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded-lg">
+                             <img src="images/qrsumo01.jpg" alt="Player 1 QR Code" class="w-full h-full object-contain rounded-lg">
+                        </div>
+                    </div>
+                    <div class="bg-pink-500/80 p-8 rounded-3xl text-center">
+                         <h3 class="text-2xl font-bold mb-4">Player 2</h3>
+                        <div class="w-48 h-48 bg-white mx-auto flex items-center justify-center rounded-lg">
+                             <img src="images/qrsumo02.jpg" alt="Player 2 QR Code" class="w-full h-full object-contain rounded-lg">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <button id="prev-slide" class="hidden fixed top-1/2 left-4 transform -translate-y-1/2 z-50 bg-white/50 hover:bg-white text-gray-800 font-bold rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition">
+        &#9664;
+    </button>
+    <button id="next-slide" class="fixed top-1/2 right-4 transform -translate-y-1/2 z-50 bg-white/50 hover:bg-white text-gray-800 font-bold rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition">
+        &#9654;
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartOptions = {cutout: '70%', responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false},tooltip: {enabled: false}}};
+            new Chart(document.getElementById('teacherChart').getContext('2d'), {type: 'doughnut', data: {labels: ['Anxious', 'Confident'], datasets: [{data: [73, 27], backgroundColor: ['#f97316', '#fed7aa'], borderWidth: 0}]}, options: chartOptions});
+            new Chart(document.getElementById('parentChart').getContext('2d'), {type: 'doughnut', data: {labels: ['Insufficient', 'Sufficient'], datasets: [{data: [80, 20], backgroundColor: ['#ec4899', '#fbcfe8'], borderWidth: 0}]}, options: chartOptions});
+
+            const tabsContainer = document.getElementById('tabs-container');
+            const tabButtons = tabsContainer ? tabsContainer.querySelectorAll('.tab-button') : [];
+            const tabPanes = tabsContainer ? Array.from(tabsContainer.querySelectorAll('.tab-pane')) : [];
+            const featuresChoiceBlocksContainer = document.getElementById('features-choice-blocks');
+            
+            function showFeaturesContent(tab) {
+                if (!featuresChoiceBlocksContainer) return;
+                featuresChoiceBlocksContainer.classList.add('hidden');
+                 tabButtons.forEach(btn => {
+                    btn.classList.remove('text-pink-500', 'border-pink-500');
+                    btn.classList.add('text-gray-500');
+                });
+                const activeButton = tabsContainer.querySelector(`.tab-button[data-tab="${tab}"]`);
+                activeButton.classList.add('text-pink-500', 'border-pink-500');
+                activeButton.classList.remove('text-gray-500');
+                
+                const targetId = `${tab}-content`;
+                const targetId2 = `${tab}-content-2`;
+
+                tabPanes.forEach(pane => {
+                    if (pane.id === targetId || pane.id === targetId2) {
+                        pane.classList.remove('hidden');
+                    } else {
+                        pane.classList.add('hidden');
+                    }
+                });
+            }
+
+            if(tabButtons) {
+                tabButtons.forEach(button => {
+                    button.addEventListener('click', () => showFeaturesContent(button.dataset.tab));
+                });
+            }
+
+
+            function resetFeaturesSlide() {
+                if (!featuresChoiceBlocksContainer) return;
+                featuresChoiceBlocksContainer.classList.remove('hidden');
+                tabPanes.forEach(pane => pane.classList.add('hidden'));
+
+                tabButtons.forEach(btn => {
+                    btn.classList.remove('text-pink-500', 'border-pink-500');
+                    btn.classList.add('text-gray-500');
+                });
+                const anatomyTab = tabsContainer.querySelector('.tab-button[data-tab="anatomy"]');
+                anatomyTab.classList.add('text-pink-500', 'border-pink-500');
+                anatomyTab.classList.remove('text-gray-500');
+            }
+
+
+            const specTabsContainer = document.getElementById('spec-tabs-container');
+            const specTabButtons = specTabsContainer.querySelectorAll('.spec-tab-button');
+            const specChoiceBlocksContainer = document.getElementById('spec-choice-blocks');
+            const specTabPanes = specTabsContainer.querySelectorAll('.spec-tab-pane');
+
+            function showSpecContent(tab) {
+                specChoiceBlocksContainer.classList.add('hidden');
+                
+                specTabButtons.forEach(btn => {
+                    btn.classList.remove('text-pink-500', 'border-pink-500');
+                    btn.classList.add('text-gray-500');
+                });
+                const activeButton = specTabsContainer.querySelector(`.spec-tab-button[data-tab="${tab}"]`);
+                activeButton.classList.add('text-pink-500', 'border-pink-500');
+                activeButton.classList.remove('text-gray-500');
+
+                specTabPanes.forEach(pane => {
+                    pane.id === `${tab}-content` ? pane.classList.remove('hidden') : pane.classList.add('hidden');
+                });
+
+                stopAllSlideshows();
+                if (tab === 'hardware') {
+                    initializeSlideshow('hardware-slideshow-container', 'hardware-slideshow-dots');
+                } else if (tab === 'software') {
+                    initializeSlideshow('software-slideshow-container', 'software-slideshow-dots');
+                }
+            }
+            
+            specTabButtons.forEach(button => {
+                button.addEventListener('click', () => showSpecContent(button.dataset.tab));
+            });
+
+            function resetSpecSlide() {
+                specChoiceBlocksContainer.classList.remove('hidden');
+                specTabPanes.forEach(pane => pane.classList.add('hidden'));
+                
+                specTabButtons.forEach(btn => {
+                    btn.classList.remove('text-pink-500', 'border-pink-500');
+                    btn.classList.add('text-gray-500');
+                });
+                const hardwareTab = specTabsContainer.querySelector('.spec-tab-button[data-tab="hardware"]');
+                hardwareTab.classList.add('text-pink-500', 'border-pink-500');
+                hardwareTab.classList.remove('text-gray-500');
+            }
+
+            const platformTabsContainer = document.getElementById('platform-tabs-container');
+            const platformTabButtons = platformTabsContainer.querySelectorAll('.platform-tab-button');
+            const platformChoiceBlocksContainer = document.getElementById('platform-choice-blocks');
+            const platformTabPanes = platformTabsContainer.querySelectorAll('.platform-tab-pane');
+
+            function showPlatformContent(tab) {
+                platformChoiceBlocksContainer.classList.add('hidden');
+                
+                platformTabButtons.forEach(btn => {
+                    btn.classList.remove('text-pink-500', 'border-pink-500');
+                    btn.classList.add('text-gray-500');
+                });
+                const activeButton = platformTabsContainer.querySelector(`.platform-tab-button[data-tab="${tab}"]`);
+                activeButton.classList.add('text-pink-500', 'border-pink-500');
+                activeButton.classList.remove('text-gray-500');
+
+                platformTabPanes.forEach(pane => {
+                    pane.id === `${tab}-content` ? pane.classList.remove('hidden') : pane.classList.add('hidden');
+                });
+
+                stopAllSlideshows();
+                if (tab === 'simulator') {
+                    initializeSlideshow('platform-slideshow-container-simulator', 'platform-slideshow-dots-simulator');
+                } else if (tab === 'community') {
+                    initializeSlideshow('platform-slideshow-container-community', 'platform-slideshow-dots-community');
+                }
+            }
+
+            platformTabButtons.forEach(button => {
+                button.addEventListener('click', () => showPlatformContent(button.dataset.tab));
+            });
+
+             function resetPlatformSlide() {
+                platformChoiceBlocksContainer.classList.remove('hidden');
+                platformTabPanes.forEach(pane => pane.classList.add('hidden'));
+                
+                platformTabButtons.forEach(btn => {
+                    btn.classList.remove('text-pink-500', 'border-pink-500');
+                    btn.classList.add('text-gray-500');
+                });
+                const simulatorTab = platformTabsContainer.querySelector('.platform-tab-button[data-tab="simulator"]');
+                simulatorTab.classList.add('text-pink-500', 'border-pink-500');
+                simulatorTab.classList.remove('text-gray-500');
+            }
+
+
+            const pathDescriptions = ['<strong>Visual Blocks:</strong> Perfect for beginners. Drag, drop, and learn the fundamentals of logic without worrying about complex syntax.','<strong>Python Code:</strong> For advanced users. A full-featured code editor to take direct control and write powerful scripts.','<strong>AI Voice Commands:</strong> The future is now. Just talk to your robot in English, Japanese, or Chinese to make it move and interact.'];
+            const pathDescriptionEl = document.getElementById('path-description');
+            const pathsChartEl = document.getElementById('pathsChart');
+            if (pathsChartEl) {
+                const pathsChart = new Chart(pathsChartEl.getContext('2d'), {type: 'bar',data: {labels: ['Visual Blocks', 'Python Code', 'AI Voice Commands'],datasets: [{label: 'Accessibility',data: [90, 60, 75],backgroundColor: ['rgba(236, 72, 153, 0.7)','rgba(249, 115, 22, 0.7)','rgba(59, 130, 246, 0.7)'],borderColor: ['#ec4899','#f97316','#3b82f6'],borderWidth: 2,borderRadius: 5}]},options: {indexAxis: 'y',maintainAspectRatio: false,plugins: {legend: { display: false },tooltip: { enabled: false }},scales: {x: {beginAtZero: true,max: 100,display: false},y: {grid: { display: false }}},onClick: (event, elements) => {if (elements.length > 0) {const index = elements[0].index;pathDescriptionEl.innerHTML = pathDescriptions[index];}}}});
+            }
+
+
+            const slideContainer = document.getElementById('slide-container');
+            const slides = Array.from(document.querySelectorAll('#slide-container > section'));
+            const prevButton = document.getElementById('prev-slide');
+            const nextButton = document.getElementById('next-slide');
+            const navLinksContainer = document.getElementById('nav-links');
+            const header = document.querySelector('header');
+            const demoVideo = document.getElementById('demo-video');
+
+            let currentSlide = 0;
+            let totalSlides = slides.length;
+            
+            const slideshows = {};
+
+            if (demoVideo) {
+                 const openFullscreen = (elem) => {
+                    if (elem.requestFullscreen) {
+                        elem.requestFullscreen();
+                    } else if (elem.webkitRequestFullscreen) { /* Safari */
+                        elem.webkitRequestFullscreen();
+                    }
+                };
+
+                const closeFullscreen = () => {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) { /* Safari */
+                        document.webkitExitFullscreen();
+                    }
+                };
+
+                demoVideo.addEventListener('click', () => {
+                    if (demoVideo.paused) {
+                        demoVideo.play();
+                        openFullscreen(demoVideo);
+                    } else {
+                        demoVideo.pause();
+                    }
+                });
+
+                demoVideo.addEventListener('ended', () => {
+                    if(document.fullscreenElement || document.webkitFullscreenElement) {
+                       closeFullscreen();
+                    }
+                });
+                
+                const onFullscreenChange = () => {
+                    if (!document.fullscreenElement && !document.webkitIsFullScreen) {
+                        if (!demoVideo.paused) {
+                            demoVideo.pause();
+                        }
+                    }
+                };
+
+                document.addEventListener('fullscreenchange', onFullscreenChange);
+                document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+            }
+
+            function initializeSlideshow(containerId, dotsId) {
+                const slideshowContainer = document.getElementById(containerId);
+                const slideshowImages = slideshowContainer.querySelectorAll('.slideshow-image');
+                const dotsContainer = document.getElementById(dotsId);
+                if (slideshowImages.length === 0) return;
+                
+                if (slideshows[containerId] && slideshows[containerId].interval) {
+                    clearInterval(slideshows[containerId].interval);
+                }
+
+                dotsContainer.innerHTML = '';
+                slideshowImages.forEach((_, i) => {
+                    const dot = document.createElement('span');
+                    dot.classList.add('slideshow-dot');
+                    dot.addEventListener('click', () => {
+                        setSlideshowImage(containerId, i);
+                        resetSlideshowInterval(containerId, dotsId);
+                    });
+                    dotsContainer.appendChild(dot);
+                });
+
+                slideshows[containerId] = {
+                    images: slideshowImages,
+                    dots: dotsContainer.querySelectorAll('.slideshow-dot'),
+                    currentIndex: 0,
+                    interval: null
+                };
+
+                setSlideshowImage(containerId, 0);
+                startSlideshowInterval(containerId, dotsId);
+            }
+
+            function setSlideshowImage(containerId, index) {
+                const slideshow = slideshows[containerId];
+                if (!slideshow) return;
+
+                slideshow.images.forEach(img => img.classList.remove('active'));
+                slideshow.dots.forEach(dot => dot.classList.remove('active'));
+                
+                slideshow.currentIndex = index;
+                slideshow.images[slideshow.currentIndex].classList.add('active');
+                slideshow.dots[slideshow.currentIndex].classList.add('active');
+            }
+
+            function startSlideshowInterval(containerId, dotsId) {
+                const slideshow = slideshows[containerId];
+                if (!slideshow) return;
+                slideshow.interval = setInterval(() => {
+                    let nextIndex = (slideshow.currentIndex + 1) % slideshow.images.length;
+                    setSlideshowImage(containerId, nextIndex);
+                }, 5000);
+            }
+
+            function resetSlideshowInterval(containerId, dotsId) {
+                const slideshow = slideshows[containerId];
+                if (!slideshow) return;
+                clearInterval(slideshow.interval);
+                startSlideshowInterval(containerId, dotsId);
+            }
+
+            function stopAllSlideshows() {
+                for (const key in slideshows) {
+                    if (slideshows[key] && slideshows[key].interval) {
+                        clearInterval(slideshows[key].interval);
+                        slideshows[key].interval = null;
+                    }
+                }
+            }
+            
+            function updateNav() {
+                totalSlides = document.querySelectorAll('#slide-container > section').length;
+                prevButton.classList.toggle('hidden', currentSlide === 0);
+                nextButton.classList.toggle('hidden', currentSlide === totalSlides - 1);
+
+                navLinksContainer.querySelectorAll('a').forEach((link) => {
+                    if (parseInt(link.dataset.slide) === currentSlide) {
+                         link.classList.add('text-pink-500', 'font-bold');
+                         link.classList.remove('text-gray-600');
+                    } else {
+                         link.classList.remove('text-pink-500', 'font-bold');
+                         link.classList.add('text-gray-600');
+                    }
+                });
+            }
+
+            function goToSlide(slideIndex) {
+                if (slideIndex < 0 || slideIndex >= totalSlides) return;
+
+                if (demoVideo && !demoVideo.paused) {
+                    demoVideo.pause();
+                }
+
+                if (currentSlide === 4 && slideIndex !== 4) {
+                    resetSpecSlide();
+                }
+                 if (currentSlide === 6 && slideIndex !== 6) {
+                    resetPlatformSlide();
+                }
+                if (currentSlide === 7 && slideIndex !== 7) {
+                    resetFeaturesSlide();
+                }
+
+                slideContainer.style.transform = `translateX(-${slideIndex * 100}vw)`;
+                currentSlide = slideIndex;
+                updateNav();
+                
+                stopAllSlideshows();
+                const currentSlideElement = slides[currentSlide];
+
+                if (currentSlideElement.id === 'solution') {
+                   // Logic to start a slideshow is now handled by the showPlatformContent function when a tab is clicked
+                } else if (currentSlideElement.id === 'ninja-spec') {
+                   // Logic to start a slideshow is now handled by the showSpecContent function when a tab is clicked
+                }
+            }
+
+            nextButton.addEventListener('click', () => goToSlide(currentSlide + 1));
+            prevButton.addEventListener('click', () => goToSlide(currentSlide - 1));
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'Enter') {
+                    goToSlide(currentSlide + 1);
+                } else if (e.key === 'ArrowLeft') {
+                    goToSlide(currentSlide - 1);
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (e.clientY <= 50) {
+                    header.style.transform = 'translateY(0)';
+                } else {
+                    header.style.transform = 'translateY(-100%)';
+                }
+            });
+
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button, a, .tab-button, canvas, .slideshow-dot, .spec-tab-button, .platform-tab-button, video')) {
+                    return;
+                }
+                if (e.button === 0) {
+                    goToSlide(currentSlide + 1);
+                } else if (e.button === 2) {
+                    goToSlide(currentSlide - 1);
+                }
+            });
+
+            navLinksContainer.addEventListener('click', (e) => {
+                if (e.target.tagName === 'A' && e.target.dataset.slide) {
+                    e.preventDefault();
+                    goToSlide(parseInt(e.target.dataset.slide));
+                }
+            });
+            
+            updateNav();
+            goToSlide(0);
+        });
+    </script>
+</body>
+</html>
